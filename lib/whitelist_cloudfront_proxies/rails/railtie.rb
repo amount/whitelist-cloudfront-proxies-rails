@@ -66,13 +66,11 @@ module WhitelistCloudfrontProxies
       }
 
       config.before_configuration do |app|
-        puts 'before'
         app.config.cloudfront = ActiveSupport::OrderedOptions.new
         app.config.cloudfront.reverse_merge! CLOUDFRONT_DEFAULTS
       end
 
       config.after_initialize do |app|
-        puts 'after'
         begin
           ::Rails.application.config.whitelist_cloudfront_proxies.ips += Importer.fetch_with_cache
         rescue Importer::ResponseError => e
