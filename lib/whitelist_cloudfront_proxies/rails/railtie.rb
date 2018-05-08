@@ -1,12 +1,12 @@
 require "httparty"
 
-module Cloudfront
+module WhitelistCloudfrontProxies
   module Rails
     class Railtie < ::Rails::Railtie
 
       module CheckTrustedProxies
         def trusted_proxy?(ip)
-          ::Rails.application.config.cloudfront.ips.any?{ |proxy| proxy === ip } || super
+          ::Rails.application.config.whitelist_cloudfront_proxies.ips.any?{ |proxy| proxy === ip } || super
         end
       end
 
@@ -14,7 +14,7 @@ module Cloudfront
 
       module RemoteIpProxies
         def proxies
-          super + ::Rails.application.config.cloudfront.ips
+          super + ::Rails.application.config.whitelist_cloudfront_proxies.ips
         end
       end
 
@@ -31,7 +31,7 @@ module Cloudfront
 
         class << self
           def fetch
-            resp = get "/ip-ranges.json", timeout: ::Rails.application.config.cloudfront.timeout
+            resp = get "/ip-ranges.json", timeout: ::Rails.application.config.whitelist_cloudfront_proxies.timeout
 
             if resp.success?
               json = ActiveSupport::JSON.decode resp.body
@@ -51,8 +51,8 @@ module Cloudfront
           end
 
           def fetch_with_cache
-            ::Rails.cache.fetch("cloudfront-rails-ips",
-                                expires_in: ::Rails.application.config.cloudfront.expires_in) do
+            ::Rails.cache.fetch("whitelisted-cloudfront-proxies",
+                                expires_in: ::Rails.application.config.whitelist_cloudfront_proxies.expires_in) do
               self.fetch
             end
           end
@@ -66,13 +66,15 @@ module Cloudfront
       }
 
       config.before_configuration do |app|
+        puts 'before'
         app.config.cloudfront = ActiveSupport::OrderedOptions.new
         app.config.cloudfront.reverse_merge! CLOUDFRONT_DEFAULTS
       end
 
       config.after_initialize do |app|
+        puts 'after'
         begin
-          ::Rails.application.config.cloudfront.ips += Importer.fetch_with_cache
+          ::Rails.application.config.whitelist_cloudfront_proxies.ips += Importer.fetch_with_cache
         rescue Importer::ResponseError => e
           ::Rails.logger.error "Cloudfront::Rails: Couldn't import from Cloudfront: #{e.response}"
         rescue => e

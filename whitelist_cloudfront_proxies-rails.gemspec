@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'cloudfront/rails/version'
+require 'whitelist_cloudfront_proxies/rails/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "whitelist_cloudfront_proxies_rails"
-  spec.version       = Cloudfront::Rails::VERSION
+  spec.name          = "whitelist_cloudfront_proxies-rails"
+  spec.version       = WhitelistCloudfrontProxies::Rails::VERSION
   spec.authors       = ["Justus R"]
   spec.email         = ["justus.renton@avant.com"]
 

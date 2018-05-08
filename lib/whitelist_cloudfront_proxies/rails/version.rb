@@ -1,4 +1,4 @@
-module Cloudfront
+module WhitelistCloudfrontProxies
   module Rails
     VERSION = "0.1.1"
   end
