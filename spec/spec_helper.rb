@@ -8,7 +8,7 @@ require "action_controller/railtie"
 require 'action_view/railtie'
 require "rails/test_unit/railtie"
 
-require "cloudfront/rails"
+require "whitelist_cloudfront_proxies/rails"
 
 require "rspec/rails"
 require "webmock/rspec"

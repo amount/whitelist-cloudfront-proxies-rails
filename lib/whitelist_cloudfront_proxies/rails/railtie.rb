@@ -66,17 +66,17 @@ module WhitelistCloudfrontProxies
       }
 
       config.before_configuration do |app|
-        app.config.cloudfront = ActiveSupport::OrderedOptions.new
-        app.config.cloudfront.reverse_merge! CLOUDFRONT_DEFAULTS
+        app.config.whitelist_cloudfront_proxies = ActiveSupport::OrderedOptions.new
+        app.config.whitelist_cloudfront_proxies.reverse_merge! CLOUDFRONT_DEFAULTS
       end
 
       config.after_initialize do |app|
         begin
           ::Rails.application.config.whitelist_cloudfront_proxies.ips += Importer.fetch_with_cache
         rescue Importer::ResponseError => e
-          ::Rails.logger.error "Cloudfront::Rails: Couldn't import from Cloudfront: #{e.response}"
+          ::Rails.logger.error "WhitelistCloudfrontProxies::Rails: Couldn't import from Cloudfront: #{e.response}"
         rescue => e
-          ::Rails.logger.error "Cloudfront::Rails: Got exception: #{e}"
+          ::Rails.logger.error "WhitelistCloudfrontProxies::Rails: Got exception: #{e}"
         end
       end
 

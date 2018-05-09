@@ -1,4 +1,4 @@
-# Cloudfront::Rails
+# WhitelistCloudfrontProxies::Rails
 
 This Gem is a shameless copy of [cloudflare-rails](https://github.com/modosc/cloudflare-rails), but for CloudFront
 
@@ -29,8 +29,8 @@ The code gets the list of proxies from `https://ip-ranges.amazonaws.com/ip-range
 For configuration
 
 ```ruby
-config.cloudfront.expires_in = 1.hour # Cache expiry for the ips
-config.cloudfront.timeout = 2.seconds # Timeout for the http access
+config.whitelist_cloudfront_proxies.expires_in = 1.hour # Cache expiry for the ips
+config.whitelist_cloudfront_proxies.timeout = 2.seconds # Timeout for the http access
 ```
 
 ## Development

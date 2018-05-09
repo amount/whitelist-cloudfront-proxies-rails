@@ -1,8 +1,8 @@
 require "spec_helper"
 
-describe Cloudfront::Rails do
+describe WhitelistCloudfrontProxies::Rails do
   it "has a version number" do
-    expect(Cloudfront::Rails::VERSION).not_to be nil
+    expect(WhitelistCloudfrontProxies::Rails::VERSION).not_to be nil
   end
 
   describe "Railtie" do
@@ -53,7 +53,7 @@ EOF
     let(:status) { 200 }
 
     before(:each) do
-      rails_app.config.cloudfront.ips = Array.new
+      rails_app.config.whitelist_cloudfront_proxies.ips = Array.new
 
       stub_request(:get, "https://ip-ranges.amazonaws.com/ip-ranges.json").
         to_return(status: status, body: ip_ranges)
@@ -68,7 +68,7 @@ EOF
 
       expect { rails_app.initialize! }.to_not raise_error
 
-      expect(rails_app.config.cloudfront.ips.size).to eq(4)
+      expect(rails_app.config.whitelist_cloudfront_proxies.ips.size).to eq(4)
     end
 
     describe "with unsuccessful responses" do
@@ -77,7 +77,7 @@ EOF
       it "doesn't prevent rails startup" do
         expect_any_instance_of(Logger).to receive(:error).once.and_call_original
         expect{rails_app.initialize!}.to_not raise_error
-        expect(rails_app.config.cloudfront.ips).to be_blank
+        expect(rails_app.config.whitelist_cloudfront_proxies.ips).to be_blank
       end
     end
 
@@ -87,7 +87,7 @@ EOF
       it "doesn't prevent rails startup" do
         expect_any_instance_of(Logger).to receive(:error).once.and_call_original
         expect{rails_app.initialize!}.to_not raise_error
-        expect(rails_app.config.cloudfront.ips).to be_blank
+        expect(rails_app.config.whitelist_cloudfront_proxies.ips).to be_blank
       end
     end
   end
