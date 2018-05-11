@@ -1,12 +1,12 @@
 require "httparty"
 
-module Cloudfront
+module WhitelistCloudfrontProxies
   module Rails
     class Railtie < ::Rails::Railtie
 
       module CheckTrustedProxies
         def trusted_proxy?(ip)
-          ::Rails.application.config.cloudfront.ips.any?{ |proxy| proxy === ip } || super
+          ::Rails.application.config.whitelist_cloudfront_proxies.ips.any?{ |proxy| proxy === ip } || super
         end
       end
 
@@ -14,7 +14,7 @@ module Cloudfront
 
       module RemoteIpProxies
         def proxies
-          super + ::Rails.application.config.cloudfront.ips
+          super + ::Rails.application.config.whitelist_cloudfront_proxies.ips
         end
       end
 
@@ -31,10 +31,10 @@ module Cloudfront
 
         class << self
           def fetch
-            resp = get "/ip-ranges.json", timeout: ::Rails.application.config.cloudfront.timeout
+            resp = get "/ip-ranges.json", timeout: ::Rails.application.config.whitelist_cloudfront_proxies.timeout
 
             if resp.success?
-              json = ActiveSupport::JSON.decode resp
+              json = ActiveSupport::JSON.decode resp.body
 
               trusted_ipv4_proxies = json["prefixes"].map do |details|
                                        IPAddr.new(details["ip_prefix"])
@@ -51,8 +51,8 @@ module Cloudfront
           end
 
           def fetch_with_cache
-            ::Rails.cache.fetch("cloudfront-rails-ips",
-                                expires_in: ::Rails.application.config.cloudfront.expires_in) do
+            ::Rails.cache.fetch("whitelisted-cloudfront-proxies",
+                                expires_in: ::Rails.application.config.whitelist_cloudfront_proxies.expires_in) do
               self.fetch
             end
           end
@@ -66,17 +66,17 @@ module Cloudfront
       }
 
       config.before_configuration do |app|
-        app.config.cloudfront = ActiveSupport::OrderedOptions.new
-        app.config.cloudfront.reverse_merge! CLOUDFRONT_DEFAULTS
+        app.config.whitelist_cloudfront_proxies = ActiveSupport::OrderedOptions.new
+        app.config.whitelist_cloudfront_proxies.reverse_merge! CLOUDFRONT_DEFAULTS
       end
 
       config.after_initialize do |app|
         begin
-          ::Rails.application.config.cloudfront.ips += Importer.fetch_with_cache
+          ::Rails.application.config.whitelist_cloudfront_proxies.ips += Importer.fetch_with_cache
         rescue Importer::ResponseError => e
-          ::Rails.logger.error "Cloudfront::Rails: Couldn't import from Cloudfront: #{e.response}"
+          ::Rails.logger.error "WhitelistCloudfrontProxies::Rails: Couldn't import from Cloudfront: #{e.response}"
         rescue => e
-          ::Rails.logger.error "Cloudfront::Rails: Got exception: #{e}"
+          ::Rails.logger.error "WhitelistCloudfrontProxies::Rails: Got exception: #{e}"
         end
       end
 

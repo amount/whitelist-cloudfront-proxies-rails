@@ -2,27 +2,21 @@
 
 This Gem is a shameless copy of [cloudflare-rails](https://github.com/modosc/cloudflare-rails), but for [CloudFront](https://aws.amazon.com/cloudfront/)
 
-![](https://api.travis-ci.org/dinks/cloudfront-rails.svg)
-
 ## Installation
 
-__This gem now supports Rails 5,, for Rails 4, please use version ~> 0.1.0__
+__This gem now supports Rails 5, for Rails 4, please use version ~> 0.1.0__
 
 Add this line to your application's Gemfile:
 
 ```ruby
 group :production do
-  gem 'cloudfront-rails'
+  gem 'whitelist_cloudfront_proxies-rails', avant_repo: 'whitelist-cloudfront-proxies-rails', tag: 'v0.2.0' # or 0.1.X for Rails 4
 end
 ```
 
 And then execute:
 
     $ bundle
-
-Or install it yourself as:
-
-    $ gem install cloudfront-rails
 
 ## Usage
 
@@ -31,8 +25,8 @@ The code gets the list of proxies from `https://ip-ranges.amazonaws.com/ip-range
 For configuration
 
 ```ruby
-config.cloudfront.expires_in = 1.hour # Cache expiry for the ips
-config.cloudfront.timeout = 2.seconds # Timeout for the http access
+config.whitelist_cloudfront_proxies.expires_in = 1.hour # Cache expiry for the ips
+config.whitelist_cloudfront_proxies.timeout = 2.seconds # Timeout for the http access
 ```
 
 ## Development
@@ -43,7 +37,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/dinks/cloudfront-rails. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/avantcredit/whitelist-cloudfront-proxies-rails. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 
 ## License
